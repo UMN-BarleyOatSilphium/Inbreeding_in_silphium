@@ -4,9 +4,9 @@
 
 library(tidyverse)
 library(car)
+library(readxl)
 
-
-cdata <- read.csv("crossdata2.csv")
+cdata <- read_xlsx("Cross_analysis.xlsx", sheet = "Data")
 cdata$SeedSet <- cdata$Filled/cdata$Total
 cdata$Individual <- paste(cdata$Family, cdata$Plant)
 
