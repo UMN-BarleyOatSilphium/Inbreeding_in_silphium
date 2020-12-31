@@ -6,7 +6,7 @@ library(tidyverse)
 library(car)
 library(readxl)
 
-cdata <- read_xlsx("Price et al-AJB 2020-AppendixS5.xlsx", sheet = "Data")
+cdata <- read_xlsx("Price et al-AJB 2020-AppendixS6.xlsx", sheet = "Data")
 cdata$SeedSet <- cdata$Filled/cdata$Total
 cdata$Individual <- paste(cdata$Family, cdata$Plant)
 
