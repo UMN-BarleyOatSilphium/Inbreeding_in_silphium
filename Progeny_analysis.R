@@ -8,7 +8,7 @@ germdata <- read_xlsx("Price et al-AJB 2020-AppendixS3.xlsx", sheet = "Germinati
 
 
 #Create Inbred, a boolean value indicating if a seed is inbred or not
-germdata$Inbred <- 0
+germdata$Inbred <- "X"
 for(i in 1: length(rownames(germdata))){
   if(germdata[i,7] == 0){
     germdata[i, 9] <- "N"
@@ -30,6 +30,9 @@ germdata %>% group_by(Family, Parent, Inbred) %>% summarise(mean = mean(Est_time
 
 G_p <- germdata %>% group_by(Family) %>% summarise(p = wilcox.test(Est_time~Inbred)$p.value)
 germdata %>% group_by(Family, Parent) %>% summarise(p = wilcox.test(Est_time~Inbred)$p.value)
+
+G_stat <- germdata %>% group_by(Family) %>% summarise(p = wilcox.test(Est_time~Inbred)$statistic)
+germdata %>% group_by(Family, Parent) %>% summarise(p = wilcox.test(Est_time~Inbred)$statistic)
 
 
 #Calculate inbreeding
@@ -122,36 +125,65 @@ dataA %>% group_by(Family, Inbred) %>% summarise(FT = length(which(!is.na(FT19))
 #Mann-whitney U test for significant change in trait value due to inbreeding
 #Experimental Family level
 ExpFam_p <- dataA %>% group_by(Family) %>% summarise(FT = wilcox.test(FT19~Inbred)$p.value, H = wilcox.test(Hcm~Inbred)$p.value, BD= wilcox.test(BDmean~Inbred)$p.value, TD = wilcox.test(TDmean~Inbred)$p.value, S = wilcox.test(Stalks~Inbred)$p.value, Fll = wilcox.test(Flowers~Inbred)$p.value, FPSq= wilcox.test(FPS~Inbred)$p.value, est= wilcox.test(est_y~Inbred)$p.value, wps= wilcox.test(weight_per_seed~Inbred)$p.value, ss= wilcox.test(Seed_fill~Inbred)$p.value )
+ExpFam_stat <- dataA %>% group_by(Family) %>% summarise(FT = wilcox.test(FT19~Inbred)$statistic, H = wilcox.test(Hcm~Inbred)$statistic, BD= wilcox.test(BDmean~Inbred)$statistic, TD = wilcox.test(TDmean~Inbred)$statistic, S = wilcox.test(Stalks~Inbred)$statistic, Fll = wilcox.test(Flowers~Inbred)$statistic, FPSq= wilcox.test(FPS~Inbred)$statistic, est= wilcox.test(est_y~Inbred)$statistic, wps= wilcox.test(weight_per_seed~Inbred)$statistic, ss= wilcox.test(Seed_fill~Inbred)$statistic )
 
 
 ##Difference in trait value due to type of treatment
 
 Type_p <- dataA %>% filter(Inbred == "N") %>% group_by(Family) %>% summarise(FT = wilcox.test(FT19~Type)$p.value, H = wilcox.test(Hcm~Type)$p.value, BD= wilcox.test(BDmean~Type)$p.value, TD = wilcox.test(TDmean~Type)$p.value, S = wilcox.test(Stalks~Type)$p.value, Fll = wilcox.test(Flowers~Type)$p.value, FPSq= wilcox.test(FPS~Type)$p.value, est= wilcox.test(est_y~Type)$p.value, wps= wilcox.test(weight_per_seed~Type)$p.value, ss= wilcox.test(Seed_fill~Type)$p.value )
 dataA %>% filter(Inbred == "N") %>% group_by(Family, Type) %>% summarise(Stalk_mean = mean(Stalks, na.rm = T), Flower_mean = mean(Flowers, na.rm = T), est_y_mean = mean(est_y, na.rm = T))
+Type_stat <- dataA %>% filter(Inbred == "N") %>% group_by(Family) %>% summarise(FT = wilcox.test(FT19~Type)$statistic, H = wilcox.test(Hcm~Type)$statistic, BD= wilcox.test(BDmean~Type)$statistic, TD = wilcox.test(TDmean~Type)$statistic, S = wilcox.test(Stalks~Type)$statistic, Fll = wilcox.test(Flowers~Type)$statistic, FPSq= wilcox.test(FPS~Type)$statistic, est= wilcox.test(est_y~Type)$statistic, wps= wilcox.test(weight_per_seed~Type)$statistic, ss= wilcox.test(Seed_fill~Type)$statistic )
 
-
+##Effect of flowering data on number of seeds per capitulum
+cor.test(dataA$FT19, as.numeric(dataA$Total), use = "pairwise.complete.obs")
 
 #Maternal Family level significance of change due to inbreeding
 MaternalFam_p <- dataA %>% group_by(Family, Parent) %>% summarise(FT = wilcox.test(FT19~Inbred)$p.value, H = wilcox.test(Hcm~Inbred)$p.value, BD= wilcox.test(BDmean~Inbred)$p.value, TD = wilcox.test(TDmean~Inbred)$p.value, S = wilcox.test(Stalks~Inbred)$p.value, Fll = wilcox.test(Flowers~Inbred)$p.value, FPSq= wilcox.test(FPS~Inbred)$p.value, est= wilcox.test(est_y~Inbred)$p.value, wps= wilcox.test(weight_per_seed~Inbred)$p.value, ss= wilcox.test(Seed_fill~Inbred)$p.value )
+MaternalFam_stat <- dataA %>% group_by(Family, Parent) %>% summarise(FT = wilcox.test(FT19~Inbred)$statistic, H = wilcox.test(Hcm~Inbred)$statistic, BD= wilcox.test(BDmean~Inbred)$statistic, TD = wilcox.test(TDmean~Inbred)$statistic, S = wilcox.test(Stalks~Inbred)$statistic, Fll = wilcox.test(Flowers~Inbred)$statistic, FPSq= wilcox.test(FPS~Inbred)$statistic, est= wilcox.test(est_y~Inbred)$statistic, wps= wilcox.test(weight_per_seed~Inbred)$statistic, ss= wilcox.test(Seed_fill~Inbred)$statistic )
 
 #Calculate coefficient of variation and test for significant change
 
 ExpFam_cv <- dataA %>% group_by(Family, Inbred) %>% summarise(FT = (sd(FT19, na.rm = T)/ mean(FT19, na.rm = T)), H = (sd(Hcm, na.rm = T)/mean(Hcm, na.rm = T)), BD= (sd(BDmean, na.rm = T)/mean(BDmean, na.rm = T)), TD = (sd(TDmean, na.rm = T)/ mean(TDmean, na.rm = T)), S = (sd(Stalks, na.rm = T)/mean(Stalks, na.rm = T)), Fll = (sd(Flowers, na.rm = T)/ mean(Flowers, na.rm = T)), FPSq = (sd(FPS, na.rm = T)/ mean(FPS, na.rm = T)), est = (sd(est_y, na.rm = T)/mean(est_y, na.rm = T)) , wps = (sd(weight_per_seed, na.rm = T)/ mean(weight_per_seed, na.rm = T)) , ss = (sd(Seed_fill, na.rm = T)/mean(Seed_fill, na.rm = T)))
 
-dataA %>% group_by(Family) %>% filter(is.na(Hcm)==F) %>% summarise(asymptotic_test(Hcm, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(BDmean)==F) %>% summarise(asymptotic_test(BDmean, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(TDmean)==F) %>% summarise(asymptotic_test(TDmean, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(FT19)==F) %>% summarise(asymptotic_test(FT19, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(Stalks)==F) %>% summarise(asymptotic_test(Stalks, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(Flowers)==F) %>% summarise(asymptotic_test(Flowers, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(FPS)==F) %>% summarise(asymptotic_test(FPS, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(Seed_fill)==F) %>% summarise(asymptotic_test(Seed_fill, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(est_y)==F) %>% summarise(asymptotic_test(est_y, Inbred)$p_value)
-dataA %>% group_by(Family) %>% filter(is.na(weight_per_seed)==F) %>% summarise(asymptotic_test(weight_per_seed, Inbred)$p_value)
+traitslist <- c("H", "H", "H", "BD", "BD","BD","TD","TD","TD","FT","FT","FT","S","S","S","F","F","F","FPS","FPS","FPS","SF","SF","SF","EY","EY","EY","WPS","WPS","WPS")
+CV_p <- as.data.frame(matrix(ncol = 3, nrow = 30))
+
+CV_p[c(1:3),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Hcm)==F) %>% summarise(asymptotic_test(Hcm, Inbred)$p_value)
+CV_p[c(4:6),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(BDmean)==F) %>% summarise(asymptotic_test(BDmean, Inbred)$p_value)
+CV_p[c(7:9),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(TDmean)==F) %>% summarise(asymptotic_test(TDmean, Inbred)$p_value)
+CV_p[c(10:12),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(FT19)==F) %>% summarise(asymptotic_test(FT19, Inbred)$p_value)
+CV_p[c(13:15),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Stalks)==F) %>% summarise(asymptotic_test(Stalks, Inbred)$p_value)
+CV_p[c(16:18),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Flowers)==F) %>% summarise(asymptotic_test(Flowers, Inbred)$p_value)
+CV_p[c(19:21),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(FPS)==F) %>% summarise(asymptotic_test(FPS, Inbred)$p_value)
+CV_p[c(22:24),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Seed_fill)==F) %>% summarise(asymptotic_test(Seed_fill, Inbred)$p_value)
+CV_p[c(25:27),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(est_y)==F) %>% summarise(asymptotic_test(est_y, Inbred)$p_value)
+CV_p[c(28:30),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(weight_per_seed)==F) %>% summarise(asymptotic_test(weight_per_seed, Inbred)$p_value)
+CV_p[3] <- traitslist
+
+CV_stat <- as.data.frame(matrix(ncol = 3, nrow = 30))
+
+CV_stat[c(1:3),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Hcm)==F) %>% summarise(asymptotic_test(Hcm, Inbred)$D_AD)
+CV_stat[c(4:6),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(BDmean)==F) %>% summarise(asymptotic_test(BDmean, Inbred)$D_AD)
+CV_stat[c(7:9),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(TDmean)==F) %>% summarise(asymptotic_test(TDmean, Inbred)$D_AD)
+CV_stat[c(10:12),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(FT19)==F) %>% summarise(asymptotic_test(FT19, Inbred)$D_AD)
+CV_stat[c(13:15),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Stalks)==F) %>% summarise(asymptotic_test(Stalks, Inbred)$D_AD)
+CV_stat[c(16:18),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Flowers)==F) %>% summarise(asymptotic_test(Flowers, Inbred)$D_AD)
+CV_stat[c(19:21),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(FPS)==F) %>% summarise(asymptotic_test(FPS, Inbred)$D_AD)
+CV_stat[c(22:24),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(Seed_fill)==F) %>% summarise(asymptotic_test(Seed_fill, Inbred)$D_AD)
+CV_stat[c(25:27),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(est_y)==F) %>% summarise(asymptotic_test(est_y, Inbred)$D_AD)
+CV_stat[c(28:30),c(1:2)] <- dataA %>% group_by(Family) %>% filter(is.na(weight_per_seed)==F) %>% summarise(asymptotic_test(weight_per_seed, Inbred)$D_AD)
+CV_stat[3] <- traitslist
+
+
 
 #Shaprio-Wilkes test for deviation from normality for seed set
 dataA %>% group_by(Family, Inbred) %>% filter(is.na(Seed_fill)==F) %>% summarise(shapiro.test(Seed_fill)$p.value)
+dataA %>% group_by(Family, Inbred) %>% filter(is.na(Seed_fill)==F) %>% summarise(shapiro.test(Seed_fill)$statistic)
 
+###Type2 SS for maternal family effect
+
+MaternalFam_anova <- dataA %>% group_by(Family) %>% summarise(FT = Anova(lm(FT19~Inbred*Parent))[3,4], H = Anova(lm(Hcm~Inbred*Parent))[3,4], BD= Anova(lm(BDmean~Inbred*Parent))[3,4], TD = Anova(lm(TDmean~Inbred*Parent))[3,4], S = Anova(lm(Stalks~Inbred*Parent))[3,4], Fll = Anova(lm(Flowers~Inbred*Parent))[3,4], FPSq= Anova(lm(FPS~Inbred*Parent))[3,4], est= Anova(lm(est_y~Inbred*Parent))[3,4], wps= Anova(lm(weight_per_seed~Inbred*Parent))[3,4], ss= Anova(lm(Seed_fill~Inbred*Parent))[3,4] )
+MaternalFam_anova_stat <- dataA %>% group_by(Family) %>% summarise(FT = Anova(lm(FT19~Inbred*Parent))[3,3], H = Anova(lm(Hcm~Inbred*Parent))[3,3], BD= Anova(lm(BDmean~Inbred*Parent))[3,3], TD = Anova(lm(TDmean~Inbred*Parent))[3,3], S = Anova(lm(Stalks~Inbred*Parent))[3,3], Fll = Anova(lm(Flowers~Inbred*Parent))[3,3], FPSq= Anova(lm(FPS~Inbred*Parent))[3,3], est= Anova(lm(est_y~Inbred*Parent))[3,3], wps= Anova(lm(weight_per_seed~Inbred*Parent))[3,3], ss= Anova(lm(Seed_fill~Inbred*Parent))[3,3] )
 
 #correlations between trait values for outbreds
 
